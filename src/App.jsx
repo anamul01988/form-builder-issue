@@ -25,23 +25,16 @@ function App() {
     },
   ];
 
-  const handleLoad = () => {
-    console.log("Form builder loaded.");
-    // Perform any actions needed upon loading the form builder
-  };
-
   const onPost = (d) => {
-    console.log("Form data posted:", d, d.task_data, typeof d.task_data);
-    // setData(d.task_data);
-    let storedData = JSON.parse(localStorage.getItem("formData"));
-    // let storedData = [];
+    let storedData = JSON.parse(localStorage.getItem("formData")) || [];
     if (storedData) {
-      const data = JSON.parse(localStorage.getItem("formData")) || []; // Parse existing data or initialize as empty array if null
       const newData = d.task_data.filter((item) => item !== null); // Filter out null values from d.task_data
-      const updatedData = [...data, ...newData]; // Concatenate existing data with newData
+      const updatedData = [...newData];
       localStorage.setItem("formData", JSON.stringify(updatedData));
+      // setData(updatedData);
     } else {
       localStorage.setItem("formData", JSON.stringify(d.task_data));
+      // setData(d.task_data);
     }
   };
 
@@ -64,85 +57,16 @@ function App() {
     // Cleanup function to clear the timeout when the component unmounts
     return () => clearTimeout(timeoutId);
   }, [allow]);
-  const handlePost = async () => {
+  const handleLoad = async () => {
     console.log("clicked");
 
     try {
-      // const storedData = await _onLoad(); // Wait for data from _onLoad
-      // const storedData = [
-      //   {
-      //     id: "5B72253A-4FFA-42B9-AD17-C21B41631FDC",
-      //     element: "Header",
-      //     text: "Header Text",
-      //     static: true,
-      //     required: false,
-      //     bold: false,
-      //     italic: false,
-      //     content: "Placeholder Text...",
-      //     canHavePageBreakBefore: true,
-      //     canHaveAlternateForm: true,
-      //     canHaveDisplayHorizontal: true,
-      //     canHaveOptionCorrect: true,
-      //     canHaveOptionValue: true,
-      //     canPopulateFromApi: true,
-      //   },
-      //   {
-      //     id: "0B59A0B2-1140-4F4C-A5E5-22DA9CA5CF62",
-      //     element: "Paragraph",
-      //     text: "Paragraph",
-      //     static: true,
-      //     required: false,
-      //     bold: false,
-      //     italic: false,
-      //     content: "Placeholder Text...",
-      //     canHavePageBreakBefore: true,
-      //     canHaveAlternateForm: true,
-      //     canHaveDisplayHorizontal: true,
-      //     canHaveOptionCorrect: true,
-      //     canHaveOptionValue: true,
-      //     canPopulateFromApi: true,
-      //   },
-      //   {
-      //     id: "5B72253A-4FFA-42B9-AD17-C21B41631FDC",
-      //     element: "Header",
-      //     text: "Header Text",
-      //     static: true,
-      //     required: false,
-      //     bold: false,
-      //     italic: false,
-      //     content: "Placeholder Text...",
-      //     canHavePageBreakBefore: true,
-      //     canHaveAlternateForm: true,
-      //     canHaveDisplayHorizontal: true,
-      //     canHaveOptionCorrect: true,
-      //     canHaveOptionValue: true,
-      //     canPopulateFromApi: true,
-      //   },
-      //   null,
-      //   {
-      //     id: "0B59A0B2-1140-4F4C-A5E5-22DA9CA5CF62",
-      //     element: "Paragraph",
-      //     text: "Paragraph",
-      //     static: true,
-      //     required: false,
-      //     bold: false,
-      //     italic: false,
-      //     content: "Placeholder Text...",
-      //     canHavePageBreakBefore: true,
-      //     canHaveAlternateForm: true,
-      //     canHaveDisplayHorizontal: true,
-      //     canHaveOptionCorrect: true,
-      //     canHaveOptionValue: true,
-      //     canPopulateFromApi: true,
-      //   },
-      // ];
       const storedData = await JSON.parse(localStorage.getItem("formData"));
       if (storedData) {
         return storedData;
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      // Handle error appropriately
     }
     return [];
   };
@@ -165,7 +89,7 @@ function App() {
           saveAlways={false}
           editMode={false}
           onPost={onPost}
-          onLoad={handlePost}
+          onLoad={handleLoad}
         />
       )}
       {/* )} */}
