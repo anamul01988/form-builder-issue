@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ReactFormBuilder, ReactFormGenerator } from "react-form-builder2";
 import "react-form-builder2/dist/app.css";
-import { Modal, Button, ButtonToolbar, Placeholder } from "rsuite";
+import { Modal, Button, ButtonToolbar, Placeholder, Loader } from "rsuite";
 function App() {
   const [data, setData] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [allow, setAllow] = useState(false);
 
   var items = [
     {
@@ -48,41 +49,126 @@ function App() {
     document.getElementById("my_modal_1");
     setIsOpen(true);
     const data = JSON.parse(localStorage.getItem("formData"));
-    console.log("data final result", data);
     setData(data);
   };
-  const closeModal = () => setIsOpen(false);
+  const closeModal = () => {
+    setIsOpen(false);
+    setAllow(true);
+  };
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      console.log("1 second has passed!");
+      setAllow(false);
+    }, 1000); // Delay of 1 second
 
-  console.log("data 123", data, isOpen);
+    // Cleanup function to clear the timeout when the component unmounts
+    return () => clearTimeout(timeoutId);
+  }, [allow]);
+  const handlePost = async () => {
+    console.log("clicked");
+
+    try {
+      // const storedData = await _onLoad(); // Wait for data from _onLoad
+      // const storedData = [
+      //   {
+      //     id: "5B72253A-4FFA-42B9-AD17-C21B41631FDC",
+      //     element: "Header",
+      //     text: "Header Text",
+      //     static: true,
+      //     required: false,
+      //     bold: false,
+      //     italic: false,
+      //     content: "Placeholder Text...",
+      //     canHavePageBreakBefore: true,
+      //     canHaveAlternateForm: true,
+      //     canHaveDisplayHorizontal: true,
+      //     canHaveOptionCorrect: true,
+      //     canHaveOptionValue: true,
+      //     canPopulateFromApi: true,
+      //   },
+      //   {
+      //     id: "0B59A0B2-1140-4F4C-A5E5-22DA9CA5CF62",
+      //     element: "Paragraph",
+      //     text: "Paragraph",
+      //     static: true,
+      //     required: false,
+      //     bold: false,
+      //     italic: false,
+      //     content: "Placeholder Text...",
+      //     canHavePageBreakBefore: true,
+      //     canHaveAlternateForm: true,
+      //     canHaveDisplayHorizontal: true,
+      //     canHaveOptionCorrect: true,
+      //     canHaveOptionValue: true,
+      //     canPopulateFromApi: true,
+      //   },
+      //   {
+      //     id: "5B72253A-4FFA-42B9-AD17-C21B41631FDC",
+      //     element: "Header",
+      //     text: "Header Text",
+      //     static: true,
+      //     required: false,
+      //     bold: false,
+      //     italic: false,
+      //     content: "Placeholder Text...",
+      //     canHavePageBreakBefore: true,
+      //     canHaveAlternateForm: true,
+      //     canHaveDisplayHorizontal: true,
+      //     canHaveOptionCorrect: true,
+      //     canHaveOptionValue: true,
+      //     canPopulateFromApi: true,
+      //   },
+      //   null,
+      //   {
+      //     id: "0B59A0B2-1140-4F4C-A5E5-22DA9CA5CF62",
+      //     element: "Paragraph",
+      //     text: "Paragraph",
+      //     static: true,
+      //     required: false,
+      //     bold: false,
+      //     italic: false,
+      //     content: "Placeholder Text...",
+      //     canHavePageBreakBefore: true,
+      //     canHaveAlternateForm: true,
+      //     canHaveDisplayHorizontal: true,
+      //     canHaveOptionCorrect: true,
+      //     canHaveOptionValue: true,
+      //     canPopulateFromApi: true,
+      //   },
+      // ];
+      const storedData = await JSON.parse(localStorage.getItem("formData"));
+      if (storedData) {
+        return storedData;
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      // Handle error appropriately
+    }
+    return [];
+  };
 
   return (
     <>
-      <h1 className="text-3xl font-bold underline">Hello worlddd!</h1>
+      <h1 className="text-xl font-bold underline">Hello worlddd!</h1>
       <button className="btn" onClick={openModal}>
         Preview
       </button>
 
-      {/* {!isOpen && (
+      {allow ? (
+        <div role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      ) : (
         <ReactFormBuilder
           toolbarItems={items}
           locale="en"
           saveAlways={false}
           editMode={false}
           onPost={onPost}
-          // onLoad={data?.length > 0 ? data : []}
+          onLoad={handlePost}
         />
-      )} */}
-      {/* {!isOpen && ( */}
-      <ReactFormBuilder
-        toolbarItems={items}
-        locale="en"
-        saveAlways={false}
-        editMode={false}
-        onPost={onPost}
-        // onLoad={data?.length > 0 ? data : []}
-      />
+      )}
       {/* )} */}
-
       {isOpen && (
         <Modal open={isOpen} onClose={closeModal}>
           <Modal.Header>
@@ -100,7 +186,7 @@ function App() {
               read_only={true}
               variables={[]}
               hide_actions={true}
-              data={JSON.parse(localStorage.getItem("formData"))}
+              data={data}
             />
           </Modal.Body>
           <Modal.Footer>
